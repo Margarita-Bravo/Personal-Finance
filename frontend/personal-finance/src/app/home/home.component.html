@@ -1,0 +1,29 @@
+<div class="container">
+    <h2>Control de Finanzas</h2>
+  
+    <div>
+      <label>Agregar Monto:</label>
+      <input type="number" #montoInput>
+      <button (click)="agregarMonto(montoInput.valueAsNumber)">Agregar</button>
+    </div>
+  
+    <div>
+      <label>Descripción del Gasto:</label>
+      <input type="text" [(ngModel)]="descripcion">
+      
+      <label>Monto del Gasto:</label>
+      <input type="number" [(ngModel)]="gasto">
+      
+      <button (click)="agregarGasto()">Registrar Gasto</button>
+    </div>
+  
+    <h3>Saldo: ${{ saldo }}</h3>
+  
+    <h3>Historial de Gastos:</h3>
+    <ul>
+      <li *ngFor="let item of historialGastos">
+        {{ item.descripcion }} - ${{ item.monto }}
+      </li>
+    </ul>
+  </div>
+  

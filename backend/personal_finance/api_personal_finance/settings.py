@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",  # Permite peticiones desde Angular en desarrollo
+]
 
 # Application definition
 
@@ -40,6 +43,8 @@ INSTALLED_APPS = [
     'user',
     'personal_expenses',
     'personal_income',
+    'rest_framework',
+    'corsheaders',  # Para permitir peticiones de Angular
 ]
 
 MIDDLEWARE = [
@@ -50,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'api_personal_finance.urls'
@@ -79,7 +86,7 @@ WSGI_APPLICATION = 'api_personal_finance.wsgi.application'
 DATABASES = {
      'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': 'autoservice',
+        'NAME': 'personal',
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': 'localhost',

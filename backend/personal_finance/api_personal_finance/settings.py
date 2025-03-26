@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",  # Permite peticiones desde Angular en desarrollo
+]
 
 # Application definition
 
@@ -37,7 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myapp.apps.MyappConfig',
+    'user',
+    'personal_expenses',
+    'personal_income',
+    'rest_framework',
+    'corsheaders',  # Para permitir peticiones de Angular
 ]
 
 MIDDLEWARE = [
@@ -48,9 +55,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 ]
 
-ROOT_URLCONF = 'personal_finance.urls'
+ROOT_URLCONF = 'api_personal_finance.urls'
 
 TEMPLATES = [
     {
@@ -68,16 +77,20 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'personal_finance.wsgi.application'
+WSGI_APPLICATION = 'api_personal_finance.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+     'default': {
+        'ENGINE': 'mysql.connector.django',
+        'NAME': 'personal',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

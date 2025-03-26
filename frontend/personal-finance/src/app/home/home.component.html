@@ -1,29 +1,44 @@
 <div class="container">
-    <h2>Control de Finanzas</h2>
-  
-    <div>
-      <label>Agregar Monto:</label>
-      <input type="number" #montoInput>
-      <button (click)="agregarMonto(montoInput.valueAsNumber)">Agregar</button>
-    </div>
-  
-    <div>
-      <label>Descripción del Gasto:</label>
-      <input type="text" [(ngModel)]="descripcion">
-      
-      <label>Monto del Gasto:</label>
-      <input type="number" [(ngModel)]="gasto">
-      
-      <button (click)="agregarGasto()">Registrar Gasto</button>
-    </div>
-  
-    <h3>Saldo: ${{ saldo }}</h3>
-  
-    <h3>Historial de Gastos:</h3>
-    <ul>
-      <li *ngFor="let item of historialGastos">
-        {{ item.descripcion }} - ${{ item.monto }}
-      </li>
-    </ul>
+  <h3 id="money">Saldo: ${{ saldo }}</h3>
+  <h2>Agregar Gastos</h2>
+  <div>
+    <label>Agregar Monto:</label>
+    <input type="number" #montoInput>
+    <button (click)="agregarMonto(montoInput.valueAsNumber)">Agregar</button>
   </div>
+</div>
+<hr>
+<br>
+<div>
+  <label>Descripción del Gasto:</label>
+  <input type="text" [(ngModel)]="descripcion">
   
+  <label>Monto del Gasto:</label>
+  <input type="number" [(ngModel)]="gasto">
+
+  <label>Fecha del Gasto:</label>
+  <input type="date" [(ngModel)]="fechaGasto">
+
+  <label for="metodoPago">Método de Pago:</label>
+  <select id="metodoPago" [(ngModel)]="metodoPago">
+    <option value="efectivo">Efectivo</option>
+    <option value="debito">Débito</option>
+    <option value="cuota">Cuota</option>
+  </select>
+
+  <button (click)="agregarGasto()">Registrar Gasto</button>
+</div>
+<hr>
+<div>
+  <h1>HISTORIAL DE GASTOS</h1>
+  <ul *ngIf="historialGastos.length > 0; else sinGastos">
+    <li *ngFor="let item of historialGastos; let i = index">
+      <strong>{{ item.descripcion }}</strong> - ${{ item.monto }} ({{ item.metodoPago }}) - {{ item.fecha }}
+      <button (click)="editarGasto(i)">✏️ Editar</button>
+      <button (click)="eliminarGasto(i)">❌ Eliminar</button>
+    </li>
+  </ul>
+  <ng-template #sinGastos>
+    <p>No hay gastos registrados aún.</p>
+  </ng-template>
+</div>

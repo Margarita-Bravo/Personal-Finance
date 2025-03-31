@@ -27,8 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# CORDS
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:4200',
+    'http://127.0.0.1:4200',
+]
+CORS_ALLOW_ALL_ORIGINS = True  # Habilita CORS para todas las solicitudes
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",  # Permite peticiones desde Angular en desarrollo
+    "http://localhost:4200",  
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:4200',
+    'http://127.0.0.1:4200',
 ]
 
 # Application definition

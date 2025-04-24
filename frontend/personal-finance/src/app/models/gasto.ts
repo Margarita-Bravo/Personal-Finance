@@ -2,7 +2,7 @@ export class Gasto{
 
     id!: number;
     name?: string;                 
-    amount?:number;                   
+    amount:number;                   
     method_of_payment?:string;  
     date?:string;
 

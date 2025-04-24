@@ -9,7 +9,7 @@ import { Gasto } from '../app/models/gasto';
   providedIn: 'root'
 })
 export class GastoService {
-  private apiUrl = 'http://localhost:8000/api/expenses/'; // Ajusta la URL según tu backend
+  private apiUrl = 'http://localhost:8000/api/expenses/';
 
   constructor(private http: HttpClient) {}
 

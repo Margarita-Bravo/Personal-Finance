@@ -1,55 +1,105 @@
-<div class="container">
-  <!-- Saldo disponible -->
-  <h3 id="money">Saldo: ${{ saldo }}</h3>
 
-  <!-- Agregar Monto -->
-  <h2>Agregar Saldo</h2>
-  <div>
-    <label>Agregar Monto:</label>
-    <input type="number" #montoInput>
-    <button (click)="agregarMonto(montoInput.valueAsNumber)">Agregar</button>
-  </div>
+<h2 id="money">Saldo Disponible: ${{ saldo }}</h2>
+<h2>Agregar Ingreso</h2>
+<input [(ngModel)]="montoIngreso" type="number" placeholder="Monto" />
+<button (click)="agregarIngreso()">Agregar Ingreso</button>
 
-  <hr>
+<hr>
+
+<h2>Agregar Gasto</h2>
+<input [(ngModel)]="descripcionGasto" placeholder="Descripción" />
+<input [(ngModel)]="montoGasto" type="number" placeholder="Monto" />
+<select [(ngModel)]="metodoPagoGasto">
+  <option value="efectivo">Efectivo</option>
+  <option value="debito">Débito</option>
+  <option value="cuota">Cuota</option>
+</select>
+<input [(ngModel)]="fechaGasto" type="date" />
+<button (click)="agregarGasto()">Agregar Gasto</button>
+
+<hr>
 
 
-  <!-- Formulario para registrar gastos -->
-  <h2>Registrar Gasto</h2>
-  <div>
-    <label>Descripción del Gasto:</label>
-    <input type="text" [(ngModel)]="descripcion">
+<!-- Si hay datos para editar -->
 
-    <label>Monto del Gasto:</label>
-    <input type="number" [(ngModel)]="gasto">
+<div *ngIf="gastoAEditar">
+  <input [(ngModel)]="gastoAEditar.name" placeholder="Descripción" />
+  <input [(ngModel)]="gastoAEditar.amount" type="number" placeholder="Monto" />
+  <select [(ngModel)]="gastoAEditar.method_of_payment">
+    <option value="efectivo">Efectivo</option>
+    <option value="debito">Débito</option>
+    <option value="cuota">Cuota</option>
+  </select>
+  <input [(ngModel)]="gastoAEditar.date" type="date" />
+  <button (click)="actualizarGasto()">Actualizar Gasto</button>
+</div>
 
-    <label>Método de Pago:</label>
-    <select [(ngModel)]="metodoPago">
-      <option value="efectivo">Efectivo</option>
-      <option value="debito">Débito</option>
-      <option value="cuota">Cuota</option>
-    </select>
+<!-- Historial de Gastos -->
+<h2>Historial de Gastos</h2>
+<h2>Filtrar Gastos</h2>
+<div>
+  <label>Fecha:</label>
+  <input type="date" [(ngModel)]="filtroFecha" />
+  <label>Método de pago:</label>
+  <select [(ngModel)]="filtroMetodoPago">
+    <option value="">Todos</option>
+    <option value="efectivo">Efectivo</option>
+    <option value="debito">Débito</option>
+    <option value="cuota">Cuota</option>
+  </select>
+</div>
+<ul>
+  <li *ngFor="let gasto of gastosFiltrados; let i = index">
+    <strong>{{ gasto.name }}</strong> - ${{ gasto.amount }} 
+    ({{ gasto.method_of_payment }}) -  {{ gasto.date | date:'dd/MM/yyyy' }}
+    <button (click)="editarGasto(i, gasto.id)">✏️ Editar</button>
+    <button (click)="eliminarGasto(i, gasto.id)">❌ Eliminar</button>
+  </li>
+</ul>
 
-    <label>Fecha del Gasto:</label>
-    <input type="date" [(ngModel)]="fechaGasto">
+<hr>
 
-    <button (click)="agregarGasto()">Registrar Gasto</button>
-  </div>
+<h2>Historial de Gastos</h2>
+<ul>
+  <li *ngFor="let gasto of gastosFiltrados; let i = index">
+    <div *ngIf="editandoIdGasto === gasto.id; else vistaNormal">
+      <!-- Vista de edición -->
+      <input [(ngModel)]="descripcionGasto" placeholder="Descripción" />
+      <input [(ngModel)]="montoGasto" type="number" placeholder="Monto" />
+      <select [(ngModel)]="metodoPagoGasto">
+        <option value="efectivo">Efectivo</option>
+        <option value="debito">Débito</option>
+        <option value="cuota">Cuota</option>
+      </select>
+      <input [(ngModel)]="fechaGasto" type="date" />
+      <button (click)="guardarGastoEditado()">💾 Guardar Cambios</button>
+      <button (click)="cancelarEdicion()">❌ Cancelar</button>
+    </div>
 
-  <hr>
-
-  <!-- Historial de Gastos -->
-  <h1>HISTORIAL DE GASTOS</h1>
-  <ul *ngIf="historialGastos.length > 0; else sinGastos">
-    <li *ngFor="let gasto of historialGastos; let i = index">
-      <strong>{{ gasto.name }}</strong> - ${{ gasto.amount }} 
-      ({{ gasto.method_of_payment }}) - {{ gasto.date }}
-
+    <!-- Vista normal -->
+    <ng-template #vistaNormal>
+      <strong>{{ gasto.name }}</strong> - ${{ gasto.amount | number:'1.2-2' }} 
+      ({{ gasto.method_of_payment }}) - {{ gasto.date | date:'dd/MM/yyyy' }} 
       <button (click)="editarGasto(i, gasto.id)">✏️ Editar</button>
       <button (click)="eliminarGasto(i, gasto.id)">❌ Eliminar</button>
-    </li>
-  </ul>
+    </ng-template>
+  </li>
+</ul>
 
-  <ng-template #sinGastos>
-    <p>No hay gastos registrados aún.</p>
-  </ng-template>
-</div>
+<hr>
+<h2>Historial de Gastos</h2>
+<ul>
+  <li *ngFor="let item of historialGastosConSaldo">
+    <strong>{{ item.gasto.name }}</strong> -
+    ${{ item.gasto.amount.toFixed(2) }} ({{ item.gasto.method_of_payment }}) -
+    {{ item.gasto.date | date:'dd/MM/yyyy' }} -
+    <em>Saldo restante: ${{ item.saldoRestante.toFixed(2) }}</em>
+    <button (click)="editarGastoDesdeItem(item.gasto)">✏️ Editar</button>
+    <button (click)="eliminarGastoDesdeItem(item.gasto)">❌ Eliminar</button>
+  </li>
+</ul>
+
+
+
+
+

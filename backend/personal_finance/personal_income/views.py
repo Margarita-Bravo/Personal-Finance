@@ -6,5 +6,5 @@ from .serializer import Personal_incomeSerializer
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
-    queryset = Personal_income.objects.all()
+    queryset = Personal_income.objects.all().order_by('-date')
     serializer_class = Personal_incomeSerializer

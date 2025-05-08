@@ -9,7 +9,7 @@ import { Ingreso } from '../app/models/ingreso';
   providedIn: 'root'
 })
 export class IngresoService{
-     private apiUrl = 'http://localhost:8000/api/income/'; 
+     private apiUrl = "http://localhost:8000/api/income/"; 
     
       constructor(private http: HttpClient) {}
 
@@ -20,5 +20,16 @@ export class IngresoService{
       agregarIngreso(ingreso: Ingreso): Observable<Ingreso> {
         return this.http.post<Ingreso>(this.apiUrl, ingreso);
       }
+
+
+      // ingreso.service.ts
+      editarIngreso(id: number, ingreso: Ingreso): Observable<Ingreso> {
+        return this.http.put<Ingreso>(`${this.apiUrl}${id}/`, ingreso);
+      }
+
+      eliminarIngreso(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}${id}/`);
+      }
+
 
 }

@@ -9,7 +9,7 @@ class Personal_expenses(models.Model):
     method_of_payment=models.CharField(max_length=100)
 
     # fecha
-    date=models.DateTimeField(default=datetime.now)
+    date=models.DateTimeField(default=datetime.today)
 
     # monto
     amount=models.DecimalField(

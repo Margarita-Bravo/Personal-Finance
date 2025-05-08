@@ -17,15 +17,19 @@ import { Ingreso } from '../models/ingreso';
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
+ //variables de ingreso
   saldo: number = 0;
   ingresos: Ingreso[] = [];
-  historialGastos: Gasto[] = [];
 
+  ingresoAEditar: Ingreso | null = null;
+  editandoIdIngreso: number | null = null;
+
+
+
+  //varibles de gastos
+  historialGastos: Gasto[] = [];
   gastoAEditar: Gasto | null = null;  // Variable para almacenar el gasto a editar
   editandoIdGasto: number | null = null;
-
-
-
   filtroFecha: string = '';
   filtroMetodoPago: string = '';
 
@@ -99,6 +103,8 @@ export class HomeComponent implements OnInit {
         this.historialGastos.push(gasto);
         this.calcularSaldo();
         alert('Gasto agregado correctamente.');
+        console.log(nuevoGasto);
+        
       },
       error: (error) => {
         console.error("Error al agregar el gasto:", error);
@@ -135,14 +141,6 @@ export class HomeComponent implements OnInit {
       });
     }
   }
-  
-  // editarGasto(index: number, id: number) {
-  //   // Buscar el gasto que se va a editar
-  //   const gasto = this.historialGastos.find(g => g.id === Number(id));
-  //   if (gasto) {
-  //     this.gastoAEditar = { ...gasto };  // Crear una copia para editar
-  //   }
-  // }
   
   actualizarGasto() {
     if (this.gastoAEditar) {
@@ -228,14 +226,18 @@ export class HomeComponent implements OnInit {
     this.saldo = totalIngresos - totalGastos;
   }
 
+ 
   get gastosFiltrados() {
     return this.historialGastos.filter(gasto => {
+      // Aseguramos que la fecha del gasto sea solo la parte de la fecha
+      const gastoFecha = gasto.date ? gasto.date.split('T')[0] : null; // formatea para solo tener la fecha
       return (
-        (this.filtroFecha ? gasto.date === this.filtroFecha : true) &&
+        (this.filtroFecha ? gastoFecha === this.filtroFecha : true) &&
         (this.filtroMetodoPago ? gasto.method_of_payment === this.filtroMetodoPago : true)
       );
     });
   }
+  
 
   get historialConSaldo(): { gasto: Gasto, saldoRestante: number }[] {
     let saldoActual = this.ingresos.reduce((acc, ingreso) => acc + ingreso.amount, 0);
@@ -251,6 +253,54 @@ export class HomeComponent implements OnInit {
   
     return historial;
   }
+
+  //funciones de ingreso
+  editarIngresoDesdeItem(ingreso: Ingreso) {
+    this.editandoIdIngreso = ingreso.id;
+    this.montoIngreso = ingreso.amount;
+  }
+  
+  guardarIngresoEditado() {
+    if (this.editandoIdIngreso === null) return;
+  
+    const ingresoActualizado = new Ingreso(this.montoIngreso, new Date().toISOString().split('T')[0]);
+  
+    this.ingresoService.editarIngreso(this.editandoIdIngreso, ingresoActualizado).subscribe({
+      next: (ingresoModificado) => {
+        const index = this.ingresos.findIndex(i => i.id === this.editandoIdIngreso);
+        if (index !== -1) this.ingresos[index] = ingresoModificado;
+        this.calcularSaldo();
+        this.resetFormularioIngreso();
+      },
+      error: (err) => console.error("Error al editar ingreso:", err)
+    });
+  }
+  
+  eliminarIngresoDesdeItem(ingreso: Ingreso) {
+    if (!confirm("¿Estás segura de que querés eliminar este ingreso?")) return;
+  
+    this.ingresoService.eliminarIngreso(ingreso.id).subscribe({
+      next: () => {
+        this.ingresos = this.ingresos.filter(i => i.id !== ingreso.id);
+        this.calcularSaldo();
+      },
+      error: (err) => console.error("Error al eliminar ingreso:", err)
+    });
+  }
+  
+  resetFormularioIngreso() {
+    this.montoIngreso = 0;
+    this.editandoIdIngreso = null;
+  }
+  
+  get ingresosOrdenados() {
+    return [...this.ingresos].sort((a, b) => {
+      const fechaA = a.date ? new Date(a.date).getTime() : 0;
+      const fechaB = b.date ? new Date(b.date).getTime() : 0;
+      return fechaB - fechaA; // Más recientes primero
+    });
+  }
+  
   
 }
  
